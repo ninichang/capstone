@@ -19,7 +19,7 @@ def make_samples(file1, seg1_1, seg1_2, file2, seg2_1, seg2_2):
     
     return query_sample, ref_sample, samplerate
 
-def play_samples():
+def play_samples(query_sample, ref_sample, samplerate):
     sd.play(query_sample, samplerate = samplerate, blocksize=blocksize, blocking=True)
     sd.play(ref_sample, samplerate = samplerate, blocksize=blocksize, blocking=True);
 
@@ -44,3 +44,35 @@ def plot_word(alignment, file1, time1, seg1_1, seg1_2, file2, time2, seg2_1, seg
     plt.plot(alignment.index1, alignment.index2)
     plt.axvline(x = get_word_xy(file1, time1, seg1_1, seg1_2), color = 'r')
     plt.hlines(y = get_word_xy(file2, time2, seg2_1, seg2_2), xmin = 0, xmax = len(query_sample), color = 'r')    
+
+
+
+
+def plot_alignment(file1, seg1_1, seg1_2, file2, seg2_1, seg2_2, alignment):
+    alignment.plot(type="threeway"); 
+    print('DTW distance: ', alignment.distance)
+    stretch_output = stretch(file1, seg1_1, seg1_2, file2, seg2_1, seg2_2, alignment)
+    print('Stretching for speech: ', stretch_output[0])
+    print('Stretching for pause: ', stretch_output[1])  
+    print('Stretching for not aligned portion: ', stretch_output[2])          
+
+
+def alignment_err(path, file1, file2, seg1_1, seg1_2, seg2_1, seg2_2, time1_lst, time2_lst, xlabel, ylabel):
+    colors = ['red', 'g', 'b', 'm', 'brown', '#d89743', 'grey', 'c', 'orange', 'g', 'b', 'm', 'red']
+    err = 0
+    for i in range(len(time1_lst)):
+        x_axis = get_word_xy(file1, time1_lst[i], seg1_1, seg1_2)
+        y_axis = get_word_xy(file2, time2_lst[i], seg2_1, seg2_2)
+        plt.axvline(x_axis, color = colors[i])
+        plt.hlines(y_axis, 0, x_axis+6000, color = colors[i])
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+
+        warp_x = np.where(path[0] == round(x_axis))[0][0]
+        warp_y = np.where(path[1] == round(y_axis))[0][0]
+        e = np.abs(warp_x - x_axis) + np.abs(warp_y - y_axis)
+#         print(warp_x, x_axis)
+#         print(warp_y, y_axis)
+#         print(e)
+        err = err + e
+    print('Avg err: ' + str(err/len(time1_lst)))

@@ -3,6 +3,7 @@ from scipy.spatial.distance import euclidean ;  from fastdtw import fastdtw ;  i
 from os.path import dirname, join as pjoin ;  from scipy.io import wavfile ; import scipy.io; import os
 import glob ; import webrtcvad;import statistics;from dtwalign import dtw as dtwalign ;import contextlib ; 
 import collections ; import contextlib;import sys; import wave
+import itertools
 
 # vad = webrtcvad.Vad()
 
@@ -63,16 +64,18 @@ def alignment_err(path, file1, file2, seg1_1, seg1_2, seg2_1, seg2_2, time1_lst,
     for i in range(len(time1_lst)):
         x_axis = get_word_xy(file1, time1_lst[i], seg1_1, seg1_2)
         y_axis = get_word_xy(file2, time2_lst[i], seg2_1, seg2_2)
+        
         plt.axvline(x_axis, color = colors[i])
         plt.hlines(y_axis, 0, x_axis+6000, color = colors[i])
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
+        
+        x_val = list(itertools.chain(*np.where(np.abs(path[0] - x_axis) < 0.1)))[0]
+        y_val = list(itertools.chain(*np.where(np.abs(path[1] - y_axis) < 0.1)))[0]
 
-        warp_x = np.where(path[0] == round(x_axis))[0][0]
-        warp_y = np.where(path[1] == round(y_axis))[0][0]
+        warp_y = path[1][x_val]
+        warp_x = path[0][y_val]
+        
         e = np.abs(warp_x - x_axis) + np.abs(warp_y - y_axis)
-#         print(warp_x, x_axis)
-#         print(warp_y, y_axis)
-#         print(e)
         err = err + e
     print('Avg err: ' + str(err/len(time1_lst)))

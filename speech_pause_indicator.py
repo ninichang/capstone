@@ -13,11 +13,11 @@ import statistics; import wave
 # ### Returns time stamp, query, and percentage of speaking duration (w/o first and last pause)
 
 # In "The diagnostic utility of patient-report and speech- language pathologists’ ratings for detecting the early onset of bulbar symptoms due to ALS", pauses are defined as longer than 300 ms.
-# 
-# 
+
+ 
 # Using 20-40ms as frame length for speech analysis: https://www.researchgate.net/publication/224217613_Preference_for_20-40_ms_window_duration_in_speech_analysis
 
-# In[18]:
+# Here I use 8k to do speech pause anlaysis as 8k is the lowest frame per second below which speech is unrecognizable.
 
 
 window_len = 30 # Unit: ms

@@ -20,6 +20,20 @@ def make_samples(file1, seg1_1, seg1_2, file2, seg2_1, seg2_2):
     
     return query_sample, ref_sample, samplerate
 
+
+'''
+scipy.io wavfile.read: 
+
+    - input = filename
+    
+        uses numpy.memmap : https://numpy.org/doc/stable/reference/generated/numpy.memmap.html
+        Creates a memory-map to an array stored in a binary file on disk.
+        
+    - output = data
+    
+        After the data is mapped to the array, the array stores the amplitude of the wave.
+'''
+
 def play_samples(query_sample, ref_sample, samplerate):
     sd.play(query_sample, samplerate = samplerate, blocksize=blocksize, blocking=True)
     sd.play(ref_sample, samplerate = samplerate, blocksize=blocksize, blocking=True);
